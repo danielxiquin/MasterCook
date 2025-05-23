@@ -99,7 +99,7 @@ export default function Header() {
                             <span className="absolute inset-0 bg-light-background translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out z-0"></span>
                             <span className="relative z-10 group-hover:text-primary transition-colors duration-300">Talleres</span>
                         </a>
-                        <a href="/" className="group relative overflow-hidden flex items-center h-16 px-6 md:px-10 text-main-text border-r border-gray-300">
+                        <a href="/about" className="group relative overflow-hidden flex items-center h-16 px-6 md:px-10 text-main-text border-r border-gray-300">
                             <span className="absolute inset-0 bg-light-background translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out z-0"></span>
                             <span className="relative z-10 group-hover:text-primary transition-colors duration-300">Sobre Nosotros</span>
                         </a>
@@ -112,7 +112,7 @@ export default function Header() {
                     </div>
                     
                     <div className="flex items-stretch justify-end">
-                        <a href="/" className="group relative overflow-hidden flex items-center h-16 px-6 md:px-10 text-main-text border-l border-r border-gray-300">
+                        <a href="/contact" className="group relative overflow-hidden flex items-center h-16 px-6 md:px-10 text-main-text border-l border-r border-gray-300">
                             <span className="absolute inset-0 bg-light-background translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out z-0"></span>
                             <span className="relative z-10 group-hover:text-primary transition-colors duration-300">Contacto</span>
                         </a>
@@ -207,10 +207,10 @@ export default function Header() {
                             <a href="/workshops" className="py-4 px-6 border-b border-gray-200 text-main-text hover:bg-gray-50">
                                 Talleres
                             </a>
-                            <a href="/" className="py-4 px-6 border-b border-gray-200 text-main-text hover:bg-gray-50">
+                            <a href="/about" className="py-4 px-6 border-b border-gray-200 text-main-text hover:bg-gray-50">
                                 Sobre Nosotros
                             </a>
-                            <a href="/" className="py-4 px-6 border-b border-gray-200 text-main-text hover:bg-gray-50">
+                            <a href="/contact" className="py-4 px-6 border-b border-gray-200 text-main-text hover:bg-gray-50">
                                 Contacto
                             </a>
                             

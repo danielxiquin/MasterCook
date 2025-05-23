@@ -92,6 +92,8 @@ export default function WorkshopId({ workshopId }) {
   const [userReservations, setUserReservations] = useState([]);
   const [isAlreadyReserved, setIsAlreadyReserved] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Nuevo estado para controlar si ya se completó la carga inicial
+  const [initialLoadCompleted, setInitialLoadCompleted] = useState(false);
 
   const workshopImagesById = {
     1: "https://hd51x5cptm.ufs.sh/f/lhdSxG5nEibuMuhOjpzB02MisAEvYjHQhPGucaFX54CJrUOn", 
@@ -109,23 +111,52 @@ export default function WorkshopId({ workshopId }) {
   };
 
   useEffect(() => {
-    getAuthTokenFromCookies();
+    initializeComponent();
     window.scrollTo(0, 0);
   }, []);
+
+  // Función principal de inicialización
+  const initializeComponent = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const token = getAuthTokenFromCookies();
+      
+      if (token) {
+        setAuthToken(token);
+        // Verificar token y cargar datos de usuario en paralelo con datos del taller
+        const [isValidToken] = await Promise.all([
+          verifyAuthToken(token),
+          loadWorkshopData(workshopId)
+        ]);
+        
+        if (isValidToken) {
+          setIsAuthenticated(true);
+          await loadUserReservations(token);
+        }
+      } else {
+        // Si no hay token, solo cargar datos del taller
+        await loadWorkshopData(workshopId);
+      }
+      
+    } catch (error) {
+      console.error('Error durante la inicialización:', error);
+      setError("Error al cargar el taller. Por favor, inténtalo de nuevo más tarde.");
+    } finally {
+      setLoading(false);
+      setInitialLoadCompleted(true);
+    }
+  };
 
   const getAuthTokenFromCookies = () => {
     const cookies = document.cookie.split(';');
     const authCookie = cookies.find(cookie => cookie.trim().startsWith('auth_token='));
     
     if (authCookie) {
-      const token = authCookie.trim().substring('auth_token='.length);
-      setAuthToken(token);
-      verifyAuthToken(token);
-    } else {
-      console.log('No auth token found in cookies');
-      loadWorkshopData(workshopId);
-      setLoading(false);
+      return authCookie.trim().substring('auth_token='.length);
     }
+    return null;
   };
 
   const verifyAuthToken = async (token) => {
@@ -137,21 +168,17 @@ export default function WorkshopId({ workshopId }) {
       });
 
       if (response.ok) {
-        setIsAuthenticated(true);
-        loadWorkshopData(workshopId);
-        loadUserReservations(token);
+        return true;
       } else {
         console.error('Invalid or expired token');
         removeAuthTokenCookie();
         setAuthToken(null);
         setIsAuthenticated(false);
-        loadWorkshopData(workshopId);
-        setLoading(false);
+        return false;
       }
     } catch (err) {
       console.error('Error verifying token:', err);
-      loadWorkshopData(workshopId);
-      setLoading(false);
+      return false;
     }
   };
 
@@ -221,7 +248,6 @@ export default function WorkshopId({ workshopId }) {
   };
   
   const loadWorkshopData = async (id) => {
-    setLoading(true);
     try {
       let allWorkshopsData = allWorkshops;
       if (allWorkshopsData.length === 0) {
@@ -231,6 +257,9 @@ export default function WorkshopId({ workshopId }) {
       const response = await fetch(`https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/workshops/${id}`);
       
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('WORKSHOP_NOT_FOUND');
+        }
         throw new Error(`Error: ${response.status}`);
       }
       
@@ -277,13 +306,15 @@ export default function WorkshopId({ workshopId }) {
           setRelatedWorkshops(related.slice(0, 3));
         }
       } else {
-        setError("No se encontró información del taller");
+        throw new Error('WORKSHOP_NOT_FOUND');
       }
     } catch (error) {
       console.error("Error al cargar los datos del taller:", error);
-      setError("Error al cargar el taller. Por favor, inténtalo de nuevo más tarde.");
-    } finally {
-      setLoading(false);
+      if (error.message === 'WORKSHOP_NOT_FOUND') {
+        setError("WORKSHOP_NOT_FOUND");
+      } else {
+        throw error; // Re-lanzar para que sea manejado por la función padre
+      }
     }
   };
 
@@ -337,7 +368,8 @@ export default function WorkshopId({ workshopId }) {
     window.location.href = '/workshops';
   };
   
-  if (loading) {
+  // Mostrar loader mientras está cargando
+  if (loading || !initialLoadCompleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA]">
         <div className="flex flex-col items-center gap-6">
@@ -348,12 +380,22 @@ export default function WorkshopId({ workshopId }) {
     );
   }
 
-  if (error) {
+  // Mostrar error solo después de que la carga inicial esté completa
+  if (error && initialLoadCompleted) {
+    const isNotFound = error === "WORKSHOP_NOT_FOUND";
+    
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] text-[#333333]">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-bold mb-4">Error</h2>
-          <p className="mb-6">{error}</p>
+          <h2 className="text-2xl font-bold mb-4">
+            {isNotFound ? "Taller no encontrado" : "Error"}
+          </h2>
+          <p className="mb-6">
+            {isNotFound 
+              ? "El taller que buscas no existe o ha sido eliminado." 
+              : "Error al cargar el taller. Por favor, inténtalo de nuevo más tarde."
+            }
+          </p>
           <a href="/workshops" className="bg-[#D94F4F] text-white px-6 py-3 rounded-lg hover:bg-[#c04545] transition-colors">
             Ver todos los talleres
           </a>
@@ -362,7 +404,8 @@ export default function WorkshopId({ workshopId }) {
     );
   }
 
-  if (!workshop) {
+  // Mostrar "no encontrado" solo si la carga está completa y no hay workshop
+  if (!workshop && initialLoadCompleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] text-[#333333]">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">

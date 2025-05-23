@@ -94,6 +94,75 @@ const CategoryButton = ({ category, isSelected, onClick }) => (
   </button>
 );
 
+const MobileCategoryDropdown = ({ categories, selectedCategory, onCategoryChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const selectedCategoryName = categories.find(c => String(c.id) === selectedCategory)?.name || "Todos";
+  
+  const handleCategorySelect = (categoryId) => {
+    onCategoryChange(categoryId);
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-3 bg-[#FFFFFE] text-[#333333] rounded-lg border border-[#FFFFE3]/50 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#6B8E23]/30 focus:border-[#6B8E23]/50 transition-all duration-300"
+      >
+        <span className="flex items-center">
+          <span className="w-1 h-5 bg-[#D94F4F] rounded-full mr-2 inline-block"></span>
+          {selectedCategoryName}
+        </span>
+        <svg 
+          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute z-50 w-full mt-2 bg-[#FFFFFE] border border-[#FFFFE3]/50 rounded-lg shadow-lg max-h-64 overflow-y-auto"
+          >
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => handleCategorySelect(String(category.id))}
+                className={`w-full px-4 py-3 text-left text-sm font-medium hover:bg-[#F5F5F5] transition-colors flex items-center ${
+                  selectedCategory === String(category.id) 
+                    ? "bg-[#333333] text-[#FAFAFA]" 
+                    : "text-[#333333]"
+                }`}
+              >
+                {selectedCategory === String(category.id) && (
+                  <span className="w-1 h-4 bg-[#6B8E23] rounded-full mr-2 inline-block"></span>
+                )}
+                {category.name}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+    </div>
+  );
+};
+
 const WorkshopCard = ({ workshop, workshopImages, index }) => {
   const getFormattedDate = (dateString) => {
     const date = new Date(dateString);
@@ -191,10 +260,10 @@ export default function Workshops() {
   
 
   useEffect(() => {
-    const storedCategory = localStorage.getItem('selectedCategory');
+    const storedCategory = window.localStorage?.getItem('selectedCategory');
     if (storedCategory) {
       setSelectedCategory(storedCategory);
-      localStorage.removeItem('selectedCategory');
+      window.localStorage?.removeItem('selectedCategory');
     }
   }, []);
 
@@ -354,7 +423,18 @@ export default function Workshops() {
                 </select>
               </div>
 
-              <div>
+              {/* Mobile Category Dropdown */}
+              <div className="md:hidden">
+                <label className="block text-xs text-[#666666] mb-2 uppercase tracking-wider">Categorías</label>
+                <MobileCategoryDropdown 
+                  categories={categories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                />
+              </div>
+
+              {/* Desktop Category List */}
+              <div className="hidden md:block">
                 <h4 className="text-[#333333] text-lg mb-4 flex tracking-wider uppercase items-center font-medium">
                   <span className="w-1 h-5 bg-[#D94F4F] rounded-full mr-2 inline-block"></span>
                   Categorías
@@ -384,7 +464,7 @@ export default function Workshops() {
                 </div>
                 
                 {selectedCategory !== "todo" && (
-                  <div className="text-[#666666] text-sm">
+                  <div className="text-[#666666] text-sm hidden sm:block">
                     Categoría: <span className="font-medium text-[#6B8E23]">
                       {categories.find(c => String(c.id) === selectedCategory)?.name || ""}
                     </span>
