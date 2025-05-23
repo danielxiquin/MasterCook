@@ -65,7 +65,7 @@ export default function LoginWithGoogle() {
     setError(null);
 
     try {
-      const backendResponse = await fetch('http://localhost:5001/api/auth/google', {
+      const backendResponse = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/auth/google', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ export default function LoginWithGoogle() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

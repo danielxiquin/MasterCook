@@ -59,7 +59,7 @@ export default function CheckoutC() {
 
   const fetchExistingReservations = async () => {
     try {
-      const reservationsResponse = await fetch('http://localhost:5003/api/reservations', {
+      const reservationsResponse = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/reservations', {
         headers: {
           'Authorization': `Bearer ${authToken}`
         },
@@ -237,7 +237,7 @@ export default function CheckoutC() {
       
       console.log('Enviando solicitud de reserva con workshop_ids:', [workshopId]);
       
-      const reservationResponse = await fetch('http://localhost:5003/api/reservations', {
+      const reservationResponse = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/reservations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -305,7 +305,7 @@ export default function CheckoutC() {
       const expiryYear = expiryParts.length > 1 ? `20${expiryParts[1]}` : ''; 
       console.log('Procesando pago para reserva:', reservationId);
 
-      const paymentResponse = await fetch('http://localhost:5004/api/payments/verify-card', {
+      const paymentResponse = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/payments/verify-card', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

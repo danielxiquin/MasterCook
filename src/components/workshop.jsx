@@ -202,7 +202,7 @@ export default function Workshops() {
     async function fetchWorkshops() {
       setIsLoading(true);
       try {
-        const response = await fetch('http://localhost:5002/api/workshops');
+        const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/workshops');
         const data = await response.json();
         setWorkshops(data.workshops || []);
       } catch (error) {
@@ -219,7 +219,7 @@ export default function Workshops() {
   useEffect(() => {
     async function fetchCategories() {
   try {
-    const response = await fetch('http://localhost:5002/api/workshop-categories');
+    const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/workshop-categories');
     const data = await response.json();
     
     const apiCategories = data.categories.map((categoryName, index) => ({

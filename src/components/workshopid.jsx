@@ -130,7 +130,7 @@ export default function WorkshopId({ workshopId }) {
 
   const verifyAuthToken = async (token) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/me', {
+      const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/auth/me', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -163,7 +163,7 @@ export default function WorkshopId({ workshopId }) {
     if (!token) return;
     
     try {
-      const response = await fetch('http://localhost:5003/api/reservations', {
+      const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/reservations', {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -200,7 +200,7 @@ export default function WorkshopId({ workshopId }) {
   
   const loadAllWorkshops = async () => {
     try {
-      const response = await fetch('http://localhost:5002/api/workshops');
+      const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/workshops');
       
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
@@ -228,7 +228,7 @@ export default function WorkshopId({ workshopId }) {
         allWorkshopsData = await loadAllWorkshops();
       }
       
-      const response = await fetch(`http://localhost:5002/api/workshops/${id}`);
+      const response = await fetch(`https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/workshops/${id}`);
       
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);

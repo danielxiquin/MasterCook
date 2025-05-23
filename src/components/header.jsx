@@ -39,7 +39,7 @@ export default function Header() {
     
     const verifyAuthToken = async (token) => {
         try {
-            const response = await fetch('http://localhost:5001/api/auth/me', {
+            const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/auth/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

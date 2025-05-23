@@ -68,7 +68,7 @@ const Dashboard = () => {
 
     const verifyAuthToken = async () => {
         try {
-            const response = await fetch('http://localhost:5001/api/auth/me', {
+            const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/auth/me', {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
                 }
@@ -105,7 +105,7 @@ const Dashboard = () => {
         setError(null);
         
         try {
-            const reservationsResponse = await fetch('http://localhost:5003/api/reservations', {
+            const reservationsResponse = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/reservations', {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
                 },
@@ -178,7 +178,7 @@ const Dashboard = () => {
 
     const updateReservationStatus = async (reservationId, newStatus, showFeedback = true) => {
         try {
-            const response = await fetch(`http://localhost:5003/api/reservations/${reservationId}`, {
+            const response = await fetch(`https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/reservations/${reservationId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
