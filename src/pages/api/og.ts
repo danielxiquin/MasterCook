@@ -1,15 +1,12 @@
-// src/pages/api/og.ts
 import chromium from 'chrome-aws-lambda';
 import puppeteer from 'puppeteer-core';
 
-export const prerender = false; // Evita ejecución en build
+export const prerender = false;
 
 export async function GET() {
-  // Si está en Vercel Lambda, usamos chrome-aws-lambda
-  const executablePath =
-    process.env.AWS_EXECUTION_ENV && (await chromium.executablePath)
-      ? await chromium.executablePath
-      : puppeteer.executablePath?.(); // Chrome local para desarrollo
+  const executablePath = process.env.AWS_EXECUTION_ENV
+    ? await chromium.executablePath
+    : undefined; // Chrome local para dev
 
   const browser = await puppeteer.launch({
     args: chromium.args,
@@ -32,7 +29,7 @@ export async function GET() {
     throw new Error('No se pudo generar la captura de pantalla');
   }
 
-  return new Response(new Uint8Array(screenshot as Buffer), {
+  return new Response(screenshot, {
     status: 200,
     headers: {
       'Content-Type': 'image/png',
