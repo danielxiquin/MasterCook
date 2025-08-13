@@ -10,7 +10,7 @@ export async function GET() {
   });
 
   const page = await browser.newPage();
-  await page.goto('https://tusitio.vercel.app', { waitUntil: 'networkidle2' });
+  await page.goto('https://master-cook.vercel.app/', { waitUntil: 'networkidle2' });
   const buffer = await page.screenshot({ type: 'png' });
   await browser.close();
 
