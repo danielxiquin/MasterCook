@@ -66,34 +66,7 @@ const Dashboard = () => {
         }
     };
 
-    const verifyAuthToken = async () => {
-        try {
-            const response = await fetch('https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/auth/me', {
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                }
-            });
-
-            if (response.ok) {
-                setIsAuthenticated(true);
-                fetchReservations();
-            } else {
-                console.error('Token inválido o expirado');
-                removeAuthTokenCookie();
-                setAuthToken(null);
-                setIsAuthenticated(false);
-                setLoading(false);
-            }
-        } catch (err) {
-            console.error('Error al verificar el token:', err);
-            setError('Error al verificar la autenticación');
-            setLoading(false);
-        }
-    };
-
-    const removeAuthTokenCookie = () => {
-        document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    };
+    
 
     const fetchReservations = async () => {
         if (!authToken) {
