@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 const categoryMappings = {
   "COCINA INTERNACIONAL": 1,
@@ -65,107 +65,66 @@ const categories = [
 export default function Categories() {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(4);
-  const [isResizing, setIsResizing] = useState(false);
-  
-  // Memoize totalPages calculation
-  const totalPages = useMemo(() => 
-    Math.ceil(categories.length / itemsPerPage), 
-    [itemsPerPage]
-  );
-  
-  // Debounced resize handler
-  const handleResize = useCallback(() => {
-    if (isResizing) return;
-    
-    setIsResizing(true);
-    requestAnimationFrame(() => {
-      const width = window.innerWidth;
-      
-      let newItemsPerPage;
-      if (width < 640) { 
-        newItemsPerPage = 1;
-      } else if (width < 1024) { 
-        newItemsPerPage = 2;
-      } else { 
-        newItemsPerPage = 4;
-      }
-      
-      setItemsPerPage(newItemsPerPage);
-      setIsResizing(false);
-    });
-  }, [isResizing]);
+  const [totalPages, setTotalPages] = useState(Math.ceil(categories.length / itemsPerPage));
   
   useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      
+      if (width < 640) { 
+        setItemsPerPage(1);
+      } else if (width < 1024) { 
+        setItemsPerPage(2);
+      } else { 
+        setItemsPerPage(4);
+      }
+    };
+    
     // Initial setup
     handleResize();
     
-    // Throttled resize listener
-    let timeoutId;
-    const throttledResize = () => {
-      if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(handleResize, 100);
-    };
-    
-    window.addEventListener('resize', throttledResize);
+    // Add event listener
+    window.addEventListener('resize', handleResize);
     
     // Cleanup
-    return () => {
-      window.removeEventListener('resize', throttledResize);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [handleResize]);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   useEffect(() => {
+    // Update total pages when items per page changes
+    const pages = Math.ceil(categories.length / itemsPerPage);
+    setTotalPages(pages);
+    
     // If current page is now invalid, reset to first page
-    if (currentPage >= totalPages) {
+    if (currentPage >= pages) {
       setCurrentPage(0);
     }
-  }, [totalPages, currentPage]);
+  }, [itemsPerPage, categories.length, currentPage]);
 
-  const nextPage = useCallback(() => {
-    setCurrentPage(prev => prev < totalPages - 1 ? prev + 1 : 0);
-  }, [totalPages]);
+  const nextPage = () => {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    } else {
+      setCurrentPage(0);
+    }
+  };
   
-  const prevPage = useCallback(() => {
-    setCurrentPage(prev => prev > 0 ? prev - 1 : totalPages - 1);
-  }, [totalPages]);
+  const prevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    } else {
+      setCurrentPage(totalPages - 1);
+    }
+  };
   
-  const navigateToWorkshops = useCallback((categoryId) => {
-    // Use sessionStorage instead of localStorage for better performance
-    sessionStorage.setItem('selectedCategory', categoryId);
+  const navigateToWorkshops = (categoryId) => {
+    localStorage.setItem('selectedCategory', categoryId);
     window.location.href = `/workshops`;
-  }, []);
+  };
   
-  // Memoize visible categories calculation
-  const visibleCategories = useMemo(() => {
-    const startIndex = currentPage * itemsPerPage;
-    return categories.slice(startIndex, startIndex + itemsPerPage);
-  }, [currentPage, itemsPerPage]);
-  
-  // Optimized hover handlers
-  const handleMouseEnter = useCallback((e) => {
-    const imgElement = e.currentTarget.parentElement.querySelector('img');
-    if (imgElement) {
-      imgElement.style.transform = 'scale(1.05)';
-    }
-  }, []);
-  
-  const handleMouseLeave = useCallback((e) => {
-    const imgElement = e.currentTarget.parentElement.querySelector('img');
-    if (imgElement) {
-      imgElement.style.transform = 'scale(1)';
-    }
-  }, []);
-  
-  // Dynamic grid class
-  const gridClass = useMemo(() => {
-    switch(itemsPerPage) {
-      case 1: return 'grid-cols-1';
-      case 2: return 'grid-cols-2';
-      case 4: return 'grid-cols-4';
-      default: return 'grid-cols-4';
-    }
-  }, [itemsPerPage]);
+  // Get visible categories for current page
+  const startIndex = currentPage * itemsPerPage;
+  const visibleCategories = categories.slice(startIndex, startIndex + itemsPerPage);
   
   return (
     <section className="relative flex flex-col font-medium text-main-text">
@@ -173,14 +132,20 @@ export default function Categories() {
         <h1 className="text-2xl sm:text-3xl md:text-4xl">Categorías</h1>
       </div>
 
-      {/* Grid container with optimized classes */}
-      <div className={`grid ${gridClass} gap-0`}>
+      {/* Grid container - number of columns is determined by items per page */}
+      <div className={`grid grid-cols-${itemsPerPage} gap-0`}>
         {visibleCategories.map((category) => (
           <div key={category.id} className="relative outline outline-2 outline-primary">
             <div className="relative" data-zoom={category.dataZoom}>
               <div className="title-container"
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
+                  onMouseEnter={(e) => {
+                    const imgElement = e.currentTarget.parentElement.querySelector('img');
+                    if (imgElement) imgElement.classList.add('scale-105');
+                  }}
+                  onMouseLeave={(e) => {
+                    const imgElement = e.currentTarget.parentElement.querySelector('img');
+                    if (imgElement) imgElement.classList.remove('scale-105');
+                  }}
               >
                 <div 
                   onClick={() => navigateToWorkshops(categoryMappings[category.title])}
@@ -204,10 +169,8 @@ export default function Categories() {
                 <img 
                   src={category.imageUrl} 
                   alt={`Categoría ${category.title}`} 
-                  className="w-full h-full object-cover transition-transform duration-300 ease-out will-change-transform" 
+                  className="w-full h-full object-cover transition-transform duration-[350ms] pointer-events-none" 
                   data-zoom={category.dataZoom}
-                  loading="lazy"
-                  decoding="async"
                 />
               </div>
             </div>
@@ -215,10 +178,10 @@ export default function Categories() {
         ))}
       </div>
       
-      <div className="flex justify-between absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2 sm:px-4 pointer-events-none">
+      <div className="flex justify-between absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2 sm:px-4">
         <button 
           onClick={prevPage} 
-          className="p-2 sm:p-3 rounded-full bg-primary text-secondary pointer-events-auto transform transition-transform hover:scale-105 active:scale-95"
+          className="p-2 sm:p-3 rounded-full bg-primary text-secondary"
           aria-label="Página anterior"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -227,7 +190,7 @@ export default function Categories() {
         </button>
         <button 
           onClick={nextPage} 
-          className="p-2 sm:p-3 rounded-full bg-primary text-secondary pointer-events-auto transform transition-transform hover:scale-105 active:scale-95"
+          className="p-2 sm:p-3 rounded-full bg-primary text-secondary"
           aria-label="Página siguiente"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -241,7 +204,7 @@ export default function Categories() {
           <button
             key={index}
             onClick={() => setCurrentPage(index)}
-            className={`h-2 w-2 sm:h-3 sm:w-3 mx-1 rounded-full transition-all duration-200 transform hover:scale-110 ${currentPage === index ? 'bg-accent' : 'bg-gray-400'}`}
+            className={`h-2 w-2 sm:h-3 sm:w-3 mx-1 rounded-full transition-colors ${currentPage === index ? 'bg-accent' : 'bg-gray-400'}`}
             aria-label={`Ir a página ${index + 1}`}
           />
         ))}

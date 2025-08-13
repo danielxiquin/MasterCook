@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, ArrowRight, AlertCircle, Check } from 'lucide-react';
+import Cookies from 'js-cookie';
 
 const Decoration = () => {
   return (
@@ -24,7 +25,6 @@ export default function SignupC() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
-  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const validatePassword = (password) => {
     let strength = 0;
@@ -37,11 +37,6 @@ export default function SignupC() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!termsAccepted) {
-      setError('Debes aceptar los términos y condiciones');
-      return;
-    }
     
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden');
@@ -72,20 +67,17 @@ export default function SignupC() {
       }
 
       if (data.token) {
-        // Simular cookies con variables en memoria
-        console.log('Token guardado:', data.token);
+        Cookies.set('auth_token', data.token, { expires: 7, path: '/' });
         
         if (data.user) {
-          // Simular localStorage con variables en memoria
-          console.log('Usuario guardado:', data.user);
+          localStorage.setItem('user', JSON.stringify(data.user));
         }
       }
 
       setSuccess(true);
       
       setTimeout(() => {
-        // Simular redirección
-        console.log('Redirigiendo a:', data.token ? '/' : '/login');
+        window.location.href = data.token ? '/' : '/login';  
       }, 2000);
       
     } catch (err) {
@@ -96,14 +88,14 @@ export default function SignupC() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4 pt-16 pb-12">
+    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4 py-12">
       <Decoration />
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-md bg-white rounded-xl border border-[#e0dfdf] overflow-hidden my-8"
+        className="w-full max-w-md bg-white rounded-xl border border-[#e0dfdf] overflow-hidden"
       >
         <div className="px-8 pt-8 pb-6 border-b border-[#E5E5E5]">
           <h1 className="text-2xl font-bold text-[#333333] mb-2">Crear cuenta</h1>
@@ -135,7 +127,7 @@ export default function SignupC() {
             </motion.div>
           )}
           
-          <div className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-1">
               <label htmlFor="name" className="block text-sm font-medium text-[#333333]">
                 Nombre completo
@@ -246,11 +238,6 @@ export default function SignupC() {
                   placeholder="••••••••"
                   className="block w-full pl-10 pr-3 py-3 border border-[#E5E5E5] rounded-lg focus:ring-2 focus:ring-[#6B8E23] focus:border-[#6B8E23] outline-none text-[#333333]"
                   disabled={isLoading || success}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSubmit(e);
-                    }
-                  }}
                 />
               </div>
               {confirmPassword && password !== confirmPassword && (
@@ -263,8 +250,7 @@ export default function SignupC() {
                 id="terms"
                 name="terms"
                 type="checkbox"
-                checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
+                required
                 className="h-4 w-4 text-[#6B8E23] focus:ring-[#6B8E23] border-[#E5E5E5] rounded"
                 disabled={isLoading || success}
               />
@@ -277,8 +263,7 @@ export default function SignupC() {
             </div>
             
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={isLoading || success}
               className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg transition-all duration-300 ${
                 isLoading || success 
@@ -297,7 +282,7 @@ export default function SignupC() {
                 </>
               )}
             </button>
-          </div>
+          </form>
           
           <div className="mt-8 text-center">
             <p className="text-[#666666]">
