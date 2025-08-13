@@ -1,6 +1,6 @@
 // src/pages/api/og.ts
 import puppeteer from 'puppeteer-core';
-
+//hola
 export async function GET() {
   const browser = await puppeteer.launch({
     executablePath: '/usr/bin/google-chrome', // Chrome incluido en Vercel
