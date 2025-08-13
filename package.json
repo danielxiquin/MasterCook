@@ -11,12 +11,12 @@
   "dependencies": {
     "@astrojs/react": "^4.2.7",
     "@astrojs/tailwind": "^6.0.2",
+    "@sparticuz/chromium-min": "^138.0.2",
     "astro": "^5.8.0",
-    "chrome-aws-lambda": "^10.1.0",
     "framer-motion": "^12.11.4",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.511.0",
-    "puppeteer-core": "^10.1.0",
+    "puppeteer-core": "^21.11.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
