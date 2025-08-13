@@ -29,7 +29,7 @@ export async function GET() {
     throw new Error('No se pudo generar la captura de pantalla');
   }
 
-  return new Response(screenshot, {
+  return new Response(new Uint8Array(screenshot as Buffer), {
     status: 200,
     headers: {
       'Content-Type': 'image/png',
