@@ -16,7 +16,7 @@
     "framer-motion": "^12.11.4",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.511.0",
-    "puppeteer-core": "^24.16.1"
+    "puppeteer-core": "^10.1.0"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.17"
