@@ -1,24 +1,36 @@
 // src/pages/api/og.ts
 import chromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer-core';
+
+export const prerender = false; 
 
 export async function GET() {
-  const browser = await chromium.puppeteer.launch({
+  const executablePath = process.env.AWS_EXECUTION_ENV
+    ? await chromium.executablePath 
+    : undefined; 
+
+  const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: { width: 1200, height: 630 },
-    executablePath: await chromium.executablePath,
+    executablePath,
     headless: chromium.headless,
   });
 
   const page = await browser.newPage();
   await page.goto('https://tusitio.vercel.app', { waitUntil: 'networkidle2' });
-  const buffer = await page.screenshot({ type: 'png' });
+
+  const result = await page.screenshot({
+    type: 'png',
+    encoding: undefined, 
+  });
 
   await browser.close();
 
-  // Convert the screenshot buffer to a Node.js Buffer and then to a Blob
-  const imageBlob = new Blob([Buffer.from(buffer)], { type: 'image/png' });
+  if (!result || typeof result === 'string') {
+    throw new Error('No se pudo generar la captura de pantalla');
+  }
 
-  return new Response(imageBlob, {
+  return new Response(new Uint8Array(result), {
     status: 200,
     headers: {
       'Content-Type': 'image/png',
