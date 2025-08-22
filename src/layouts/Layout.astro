@@ -21,7 +21,7 @@ const { projectId } = Astro.props;
     <!-- Tracking -->
     <script define:vars={{ projectId }}>
   (() => {
-    fetch('http://localhost:4321/api/projects/track-secure', {
+    fetch('https://released-labs.vercel.app/api/projects/track-secure', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
