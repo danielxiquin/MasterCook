@@ -1,7 +1,7 @@
 /* empty css                                 */
-import { c as createComponent, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_Cmp3Nnwv.mjs';
+import { c as createComponent, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_BIQpHMk-.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_D2tkY1H0.mjs';
+import { $ as $$Layout } from '../chunks/Layout_DMUtaIJp.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { X, Search, Filter, ChevronUp, ChevronDown, Calendar, Clock, Tag, AlertTriangle } from 'lucide-react';
@@ -65,93 +65,6 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-  const verifyAuthToken = async () => {
-    try {
-      const response = await fetch("https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/auth/me", {
-        headers: {
-          "Authorization": `Bearer ${authToken}`
-        }
-      });
-      if (response.ok) {
-        setIsAuthenticated(true);
-        fetchReservations();
-      } else {
-        console.error("Token inválido o expirado");
-        removeAuthTokenCookie();
-        setAuthToken(null);
-        setIsAuthenticated(false);
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error("Error al verificar el token:", err);
-      setError("Error al verificar la autenticación");
-      setLoading(false);
-    }
-  };
-  const removeAuthTokenCookie = () => {
-    document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  };
-  const fetchReservations = async () => {
-    if (!authToken) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const reservationsResponse = await fetch("https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/reservations", {
-        headers: {
-          "Authorization": `Bearer ${authToken}`
-        }
-      });
-      if (!reservationsResponse.ok) {
-        if (reservationsResponse.status === 401) {
-          removeAuthTokenCookie();
-          setAuthToken(null);
-          setIsAuthenticated(false);
-          throw new Error("Sesión expirada. Por favor, inicia sesión nuevamente.");
-        }
-        throw new Error(`Error al cargar las reservas: ${reservationsResponse.status}`);
-      }
-      const reservationsData = await reservationsResponse.json();
-      let userReservations = reservationsData.reservations || [];
-      const today = /* @__PURE__ */ new Date();
-      today.setHours(0, 0, 0, 0);
-      const updatedReservations = userReservations.map((reservation) => {
-        const workshopDate = new Date(reservation.workshop_date);
-        workshopDate.setHours(0, 0, 0, 0);
-        if (workshopDate < today && reservation.status === "Confirmada") {
-          return { ...reservation, status: "Completada" };
-        }
-        return reservation;
-      });
-      const reservationsToUpdate = updatedReservations.filter(
-        (reservation, index) => reservation.status === "Completada" && userReservations[index].status !== "Completada"
-      );
-      await Promise.all(reservationsToUpdate.map(
-        (reservation) => updateReservationStatus(reservation.id, "Completada", false)
-      ));
-      const workshopIds = [...new Set(updatedReservations.map((res) => res.workshop_id))];
-      const workshopPromises = workshopIds.map(
-        (id) => fetch(`http://localhost:5002/api/workshops/${id}`).then((res) => res.ok ? res.json() : { workshop: null }).then((data) => [id, data.workshop]).catch((err) => {
-          console.error(`Error fetching workshop ${id}:`, err);
-          return [id, null];
-        })
-      );
-      const workshopsResults = await Promise.all(workshopPromises);
-      const workshopData = Object.fromEntries(workshopsResults.filter((item) => item[1] !== null));
-      if (reservationsToUpdate.length > 0) {
-        userReservations = updatedReservations;
-      }
-      setReservations(userReservations);
-      setWorkshops(workshopData);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error in fetchReservations:", err);
-      setError(err.message || "Error al cargar las reservas");
-      setLoading(false);
-    }
-  };
   const updateReservationStatus = async (reservationId, newStatus, showFeedback = true) => {
     try {
       const response = await fetch(`https://booking-service.mangoflower-5e37f0a4.eastus.azurecontainerapps.io/api/reservations/${reservationId}`, {
@@ -184,7 +97,7 @@ const Dashboard = () => {
       return true;
     } catch (err) {
       console.error("Error updating reservation status:", err);
-      setError(`Error al ${newStatus === "Cancelada" ? "cancelar" : "actualizar"} la reserva. Por favor, inténtalo de nuevo.`);
+      setError(`Error al ${"cancelar" } la reserva. Por favor, inténtalo de nuevo.`);
       return false;
     }
   };
@@ -511,7 +424,7 @@ const Dashboard = () => {
 };
 
 const $$Profile = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "projectId": "440938cc-c1e6-42e0-baa5-ae8afd7ea5d7" }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "Dashboard", Dashboard, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/dashboard", "client:component-export": "default" })} ` })}`;
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, {}, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "Dashboard", Dashboard, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/dashboard", "client:component-export": "default" })} ` })}`;
 }, "D:/Daniel/MasterCook/src/pages/profile.astro", void 0);
 
 const $$file = "D:/Daniel/MasterCook/src/pages/profile.astro";

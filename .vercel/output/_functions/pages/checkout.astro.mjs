@@ -1,7 +1,7 @@
 /* empty css                                 */
-import { c as createComponent, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_Cmp3Nnwv.mjs';
+import { c as createComponent, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_BIQpHMk-.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_D2tkY1H0.mjs';
+import { $ as $$Layout } from '../chunks/Layout_DMUtaIJp.mjs';
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ShoppingBag, Calendar, Clock, ArrowRight, AlertCircle, CreditCard, Lock, Check } from 'lucide-react';
@@ -670,7 +670,7 @@ function CheckoutC() {
 }
 
 const $$Checkout = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "projectId": "440938cc-c1e6-42e0-baa5-ae8afd7ea5d7" }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "CheckoutC", CheckoutC, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/checkoutC", "client:component-export": "default" })} ` })}`;
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, {}, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "CheckoutC", CheckoutC, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/checkoutC", "client:component-export": "default" })} ` })}`;
 }, "D:/Daniel/MasterCook/src/pages/checkout.astro", void 0);
 
 const $$file = "D:/Daniel/MasterCook/src/pages/checkout.astro";

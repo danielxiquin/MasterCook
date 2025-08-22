@@ -1,9 +1,9 @@
 /* empty css                                 */
-import { c as createComponent, b as createAstro, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_Cmp3Nnwv.mjs';
+import { c as createComponent, b as createAstro, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_BIQpHMk-.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_D2tkY1H0.mjs';
+import { $ as $$Layout } from '../chunks/Layout_DMUtaIJp.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 export { renderers } from '../renderers.mjs';
 
 function Hero() {
@@ -101,64 +101,93 @@ const categories = [
 function Categories() {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(4);
-  const [totalPages, setTotalPages] = useState(Math.ceil(categories.length / itemsPerPage));
-  useEffect(() => {
-    const handleResize = () => {
+  const [isResizing, setIsResizing] = useState(false);
+  const totalPages = useMemo(
+    () => Math.ceil(categories.length / itemsPerPage),
+    [itemsPerPage]
+  );
+  const handleResize = useCallback(() => {
+    if (isResizing) return;
+    setIsResizing(true);
+    requestAnimationFrame(() => {
       const width = window.innerWidth;
+      let newItemsPerPage;
       if (width < 640) {
-        setItemsPerPage(1);
+        newItemsPerPage = 1;
       } else if (width < 1024) {
-        setItemsPerPage(2);
+        newItemsPerPage = 2;
       } else {
-        setItemsPerPage(4);
+        newItemsPerPage = 4;
       }
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+      setItemsPerPage(newItemsPerPage);
+      setIsResizing(false);
+    });
+  }, [isResizing]);
   useEffect(() => {
-    const pages = Math.ceil(categories.length / itemsPerPage);
-    setTotalPages(pages);
-    if (currentPage >= pages) {
+    handleResize();
+    let timeoutId;
+    const throttledResize = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleResize, 100);
+    };
+    window.addEventListener("resize", throttledResize);
+    return () => {
+      window.removeEventListener("resize", throttledResize);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [handleResize]);
+  useEffect(() => {
+    if (currentPage >= totalPages) {
       setCurrentPage(0);
     }
-  }, [itemsPerPage, categories.length, currentPage]);
-  const nextPage = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage(currentPage + 1);
-    } else {
-      setCurrentPage(0);
-    }
-  };
-  const prevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
-    } else {
-      setCurrentPage(totalPages - 1);
-    }
-  };
-  const navigateToWorkshops = (categoryId) => {
-    localStorage.setItem("selectedCategory", categoryId);
+  }, [totalPages, currentPage]);
+  const nextPage = useCallback(() => {
+    setCurrentPage((prev) => prev < totalPages - 1 ? prev + 1 : 0);
+  }, [totalPages]);
+  const prevPage = useCallback(() => {
+    setCurrentPage((prev) => prev > 0 ? prev - 1 : totalPages - 1);
+  }, [totalPages]);
+  const navigateToWorkshops = useCallback((categoryId) => {
+    sessionStorage.setItem("selectedCategory", categoryId);
     window.location.href = `/workshops`;
-  };
-  const startIndex = currentPage * itemsPerPage;
-  const visibleCategories = categories.slice(startIndex, startIndex + itemsPerPage);
+  }, []);
+  const visibleCategories = useMemo(() => {
+    const startIndex = currentPage * itemsPerPage;
+    return categories.slice(startIndex, startIndex + itemsPerPage);
+  }, [currentPage, itemsPerPage]);
+  const handleMouseEnter = useCallback((e) => {
+    const imgElement = e.currentTarget.parentElement.querySelector("img");
+    if (imgElement) {
+      imgElement.style.transform = "scale(1.05)";
+    }
+  }, []);
+  const handleMouseLeave = useCallback((e) => {
+    const imgElement = e.currentTarget.parentElement.querySelector("img");
+    if (imgElement) {
+      imgElement.style.transform = "scale(1)";
+    }
+  }, []);
+  const gridClass = useMemo(() => {
+    switch (itemsPerPage) {
+      case 1:
+        return "grid-cols-1";
+      case 2:
+        return "grid-cols-2";
+      case 4:
+        return "grid-cols-4";
+      default:
+        return "grid-cols-4";
+    }
+  }, [itemsPerPage]);
   return /* @__PURE__ */ jsxs("section", { className: "relative flex flex-col font-medium text-main-text", children: [
     /* @__PURE__ */ jsx("div", { className: "p-4 sm:p-6 md:p-8", children: /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl md:text-4xl", children: "Categorías" }) }),
-    /* @__PURE__ */ jsx("div", { className: `grid grid-cols-${itemsPerPage} gap-0`, children: visibleCategories.map((category) => /* @__PURE__ */ jsx("div", { className: "relative outline outline-2 outline-primary", children: /* @__PURE__ */ jsxs("div", { className: "relative", "data-zoom": category.dataZoom, children: [
+    /* @__PURE__ */ jsx("div", { className: `grid ${gridClass} gap-0`, children: visibleCategories.map((category) => /* @__PURE__ */ jsx("div", { className: "relative outline outline-2 outline-primary", children: /* @__PURE__ */ jsxs("div", { className: "relative", "data-zoom": category.dataZoom, children: [
       /* @__PURE__ */ jsx(
         "div",
         {
           className: "title-container",
-          onMouseEnter: (e) => {
-            const imgElement = e.currentTarget.parentElement.querySelector("img");
-            if (imgElement) imgElement.classList.add("scale-105");
-          },
-          onMouseLeave: (e) => {
-            const imgElement = e.currentTarget.parentElement.querySelector("img");
-            if (imgElement) imgElement.classList.remove("scale-105");
-          },
+          onMouseEnter: handleMouseEnter,
+          onMouseLeave: handleMouseLeave,
           children: /* @__PURE__ */ jsx(
             "div",
             {
@@ -182,19 +211,21 @@ function Categories() {
             {
               src: category.imageUrl,
               alt: `Categoría ${category.title}`,
-              className: "w-full h-full object-cover transition-transform duration-[350ms] pointer-events-none",
-              "data-zoom": category.dataZoom
+              className: "w-full h-full object-cover transition-transform duration-300 ease-out will-change-transform",
+              "data-zoom": category.dataZoom,
+              loading: "lazy",
+              decoding: "async"
             }
           )
         }
       )
     ] }) }, category.id)) }),
-    /* @__PURE__ */ jsxs("div", { className: "flex justify-between absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2 sm:px-4", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex justify-between absolute top-1/2 left-0 right-0 transform -translate-y-1/2 px-2 sm:px-4 pointer-events-none", children: [
       /* @__PURE__ */ jsx(
         "button",
         {
           onClick: prevPage,
-          className: "p-2 sm:p-3 rounded-full bg-primary text-secondary",
+          className: "p-2 sm:p-3 rounded-full bg-primary text-secondary pointer-events-auto transform transition-transform hover:scale-105 active:scale-95",
           "aria-label": "Página anterior",
           children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M15 19l-7-7 7-7" }) })
         }
@@ -203,7 +234,7 @@ function Categories() {
         "button",
         {
           onClick: nextPage,
-          className: "p-2 sm:p-3 rounded-full bg-primary text-secondary",
+          className: "p-2 sm:p-3 rounded-full bg-primary text-secondary pointer-events-auto transform transition-transform hover:scale-105 active:scale-95",
           "aria-label": "Página siguiente",
           children: /* @__PURE__ */ jsx("svg", { xmlns: "http://www.w3.org/2000/svg", className: "h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", children: /* @__PURE__ */ jsx("path", { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M9 5l7 7-7 7" }) })
         }
@@ -213,7 +244,7 @@ function Categories() {
       "button",
       {
         onClick: () => setCurrentPage(index),
-        className: `h-2 w-2 sm:h-3 sm:w-3 mx-1 rounded-full transition-colors ${currentPage === index ? "bg-accent" : "bg-gray-400"}`,
+        className: `h-2 w-2 sm:h-3 sm:w-3 mx-1 rounded-full transition-all duration-200 transform hover:scale-110 ${currentPage === index ? "bg-accent" : "bg-gray-400"}`,
         "aria-label": `Ir a página ${index + 1}`
       },
       index
@@ -433,7 +464,7 @@ const $$Astro = createAstro();
 const $$Index = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$Index;
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "projectId": "440938cc-c1e6-42e0-baa5-ae8afd7ea5d7" }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "Hero", Hero, {})} ${renderComponent($$result2, "Categories", Categories, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/categories", "client:component-export": "default" })} ${renderComponent($$result2, "Featured", ResponsiveFeatured, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/featured", "client:component-export": "default" })} ${renderComponent($$result2, "FeaturedCards", FeaturedCards, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/featuredCards", "client:component-export": "default" })} ${renderComponent($$result2, "Benefits", Benefits, {})} ${renderComponent($$result2, "Testimonials", Testimonials, {})} ${renderComponent($$result2, "Suscribe", Subscribe, {})} ` })}`;
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, {}, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "Hero", Hero, {})} ${renderComponent($$result2, "Categories", Categories, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/categories", "client:component-export": "default" })} ${renderComponent($$result2, "Featured", ResponsiveFeatured, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/featured", "client:component-export": "default" })} ${renderComponent($$result2, "FeaturedCards", FeaturedCards, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/featuredCards", "client:component-export": "default" })} ${renderComponent($$result2, "Benefits", Benefits, {})} ${renderComponent($$result2, "Testimonials", Testimonials, {})} ${renderComponent($$result2, "Suscribe", Subscribe, {})} ` })}`;
 }, "D:/Daniel/MasterCook/src/pages/index.astro", void 0);
 
 const $$file = "D:/Daniel/MasterCook/src/pages/index.astro";

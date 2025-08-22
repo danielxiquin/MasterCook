@@ -1,12 +1,11 @@
 /* empty css                                 */
-import { c as createComponent, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_Cmp3Nnwv.mjs';
+import { c as createComponent, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_BIQpHMk-.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_D2tkY1H0.mjs';
+import { $ as $$Layout } from '../chunks/Layout_DMUtaIJp.mjs';
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, Check, User, Mail, Lock, ArrowRight } from 'lucide-react';
-import Cookies from 'js-cookie';
 export { renderers } from '../renderers.mjs';
 
 const Decoration = () => {
@@ -25,6 +24,7 @@ function SignupC() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const validatePassword = (password2) => {
     let strength = 0;
     if (password2.length >= 8) strength += 1;
@@ -35,6 +35,10 @@ function SignupC() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!termsAccepted) {
+      setError("Debes aceptar los términos y condiciones");
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden");
       return;
@@ -58,14 +62,14 @@ function SignupC() {
         throw new Error(data.message || "Error al crear la cuenta");
       }
       if (data.token) {
-        Cookies.set("auth_token", data.token, { expires: 7, path: "/" });
+        console.log("Token guardado:", data.token);
         if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
+          console.log("Usuario guardado:", data.user);
         }
       }
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = data.token ? "/" : "/login";
+        console.log("Redirigiendo a:", data.token ? "/" : "/login");
       }, 2e3);
     } catch (err) {
       setError(err.message || "Ocurrió un error durante el registro");
@@ -73,7 +77,7 @@ function SignupC() {
       setIsLoading(false);
     }
   };
-  return /* @__PURE__ */ jsxs("div", { className: "min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4 py-12", children: [
+  return /* @__PURE__ */ jsxs("div", { className: "min-h-screen bg-[#FAFAFA] flex items-center justify-center px-4 pt-16 pb-12", children: [
     /* @__PURE__ */ jsx(Decoration, {}),
     /* @__PURE__ */ jsxs(
       motion.div,
@@ -81,7 +85,7 @@ function SignupC() {
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.6 },
-        className: "w-full max-w-md bg-white rounded-xl border border-[#e0dfdf] overflow-hidden",
+        className: "w-full max-w-md bg-white rounded-xl border border-[#e0dfdf] overflow-hidden my-8",
         children: [
           /* @__PURE__ */ jsxs("div", { className: "px-8 pt-8 pb-6 border-b border-[#E5E5E5]", children: [
             /* @__PURE__ */ jsx("h1", { className: "text-2xl font-bold text-[#333333] mb-2", children: "Crear cuenta" }),
@@ -112,7 +116,7 @@ function SignupC() {
                 ] })
               }
             ),
-            /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-5", children: [
+            /* @__PURE__ */ jsxs("div", { className: "space-y-5", children: [
               /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
                 /* @__PURE__ */ jsx("label", { htmlFor: "name", className: "block text-sm font-medium text-[#333333]", children: "Nombre completo" }),
                 /* @__PURE__ */ jsxs("div", { className: "relative", children: [
@@ -207,7 +211,12 @@ function SignupC() {
                       onChange: (e) => setConfirmPassword(e.target.value),
                       placeholder: "••••••••",
                       className: "block w-full pl-10 pr-3 py-3 border border-[#E5E5E5] rounded-lg focus:ring-2 focus:ring-[#6B8E23] focus:border-[#6B8E23] outline-none text-[#333333]",
-                      disabled: isLoading || success
+                      disabled: isLoading || success,
+                      onKeyDown: (e) => {
+                        if (e.key === "Enter") {
+                          handleSubmit(e);
+                        }
+                      }
                     }
                   )
                 ] }),
@@ -220,7 +229,8 @@ function SignupC() {
                     id: "terms",
                     name: "terms",
                     type: "checkbox",
-                    required: true,
+                    checked: termsAccepted,
+                    onChange: (e) => setTermsAccepted(e.target.checked),
                     className: "h-4 w-4 text-[#6B8E23] focus:ring-[#6B8E23] border-[#E5E5E5] rounded",
                     disabled: isLoading || success
                   }
@@ -234,7 +244,8 @@ function SignupC() {
               /* @__PURE__ */ jsx(
                 "button",
                 {
-                  type: "submit",
+                  type: "button",
+                  onClick: handleSubmit,
                   disabled: isLoading || success,
                   className: `w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg transition-all duration-300 ${isLoading || success ? "bg-[#D94F4F]/70 text-white cursor-not-allowed" : "bg-[#D94F4F] text-white hover:bg-[#c04545] shadow-md hover:shadow-lg"}`,
                   children: isLoading ? /* @__PURE__ */ jsx(Loader, {}) : success ? "Cuenta creada" : /* @__PURE__ */ jsxs(Fragment, { children: [
@@ -257,7 +268,7 @@ function SignupC() {
 }
 
 const $$Signup = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "projectId": "440938cc-c1e6-42e0-baa5-ae8afd7ea5d7" }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "SignupC", SignupC, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/signUpC", "client:component-export": "default" })} ` })}`;
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, {}, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "SignupC", SignupC, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/signUpC", "client:component-export": "default" })} ` })}`;
 }, "D:/Daniel/MasterCook/src/pages/signup.astro", void 0);
 
 const $$file = "D:/Daniel/MasterCook/src/pages/signup.astro";

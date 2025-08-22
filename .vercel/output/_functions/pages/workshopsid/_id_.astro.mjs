@@ -1,7 +1,7 @@
 /* empty css                                    */
-import { c as createComponent, b as createAstro, r as renderComponent, a as renderTemplate } from '../../chunks/astro/server_Cmp3Nnwv.mjs';
+import { c as createComponent, b as createAstro, r as renderComponent, a as renderTemplate } from '../../chunks/astro/server_BIQpHMk-.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../../chunks/Layout_D2tkY1H0.mjs';
+import { $ as $$Layout } from '../../chunks/Layout_DMUtaIJp.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
@@ -666,7 +666,7 @@ const $$id = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$id;
   const { id } = Astro2.params;
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "projectId": "440938cc-c1e6-42e0-baa5-ae8afd7ea5d7", "title": `Taller #${id} - Salsas Artesanales` }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "WorkshopId", WorkshopId, { "workshopId": id, "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/workshopid", "client:component-export": "default" })} ` })}`;
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "title": `Taller #${id} - Salsas Artesanales` }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "WorkshopId", WorkshopId, { "workshopId": id, "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/workshopid", "client:component-export": "default" })} ` })}`;
 }, "D:/Daniel/MasterCook/src/pages/workshopsId/[id].astro", void 0);
 
 const $$file = "D:/Daniel/MasterCook/src/pages/workshopsId/[id].astro";
