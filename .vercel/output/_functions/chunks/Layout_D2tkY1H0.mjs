@@ -1,4 +1,4 @@
-import { c as createComponent, b as createAstro, d as addAttribute, e as renderHead, r as renderComponent, f as renderSlot, a as renderTemplate } from './astro/server_BIQpHMk-.mjs';
+import { c as createComponent, b as createAstro, a as renderTemplate, d as renderSlot, r as renderComponent, e as renderHead, f as defineScriptVars, g as addAttribute } from './astro/server_Cmp3Nnwv.mjs';
 import 'kleur/colors';
 /* empty css                         */
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
@@ -445,11 +445,16 @@ function Header() {
   ] });
 }
 
+var __freeze = Object.freeze;
+var __defProp = Object.defineProperty;
+var __template = (cooked, raw) => __freeze(__defProp(cooked, "raw", { value: __freeze(cooked.slice()) }));
+var _a;
 const $$Astro = createAstro();
 const $$Layout = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$Layout;
-  return renderTemplate`<html lang="en" data-astro-cid-sckkx6r4> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator"${addAttribute(Astro2.generator, "content")}><title>MasterCook</title>${renderHead()}</head> <body data-astro-cid-sckkx6r4> ${renderComponent($$result, "Header", Header, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/header", "client:component-export": "default", "data-astro-cid-sckkx6r4": true })} <main data-astro-cid-sckkx6r4> ${renderSlot($$result, $$slots["default"])} </main> <footer data-astro-cid-sckkx6r4></footer> </body></html>`;
+  const { projectId } = Astro2.props;
+  return renderTemplate(_a || (_a = __template(['<html lang="en" data-astro-cid-sckkx6r4> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator"', "><title>MasterCook</title><!-- Tracking --><script>(function(){", "\n      (() => {\n        const script = document.createElement('script');\n        script.src = 'http://localhost:4321/api/projects/track-secure';\n        script.dataset.project = projectId;\n        script.defer = true;\n        document.head.appendChild(script);\n      })();\n    })();<\/script>", "</head> <body data-astro-cid-sckkx6r4> ", " <main data-astro-cid-sckkx6r4> ", " </main> <footer data-astro-cid-sckkx6r4></footer> </body></html>"])), addAttribute(Astro2.generator, "content"), defineScriptVars({ projectId }), renderHead(), renderComponent($$result, "Header", Header, { "client:load": true, "client:component-hydration": "load", "client:component-path": "D:/Daniel/MasterCook/src/components/header", "client:component-export": "default", "data-astro-cid-sckkx6r4": true }), renderSlot($$result, $$slots["default"]));
 }, "D:/Daniel/MasterCook/src/layouts/Layout.astro", void 0);
 
 export { $$Layout as $ };

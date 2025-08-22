@@ -1,7 +1,7 @@
 /* empty css                                 */
-import { c as createComponent, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_BIQpHMk-.mjs';
+import { c as createComponent, r as renderComponent, a as renderTemplate } from '../chunks/astro/server_Cmp3Nnwv.mjs';
 import 'kleur/colors';
-import { $ as $$Layout } from '../chunks/Layout_DaMmzM8O.mjs';
+import { $ as $$Layout } from '../chunks/Layout_D2tkY1H0.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 export { renderers } from '../renderers.mjs';
 
@@ -144,7 +144,7 @@ function AboutUs() {
 }
 
 const $$About = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, {}, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "AboutUs", AboutUs, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/aboutC", "client:component-export": "default" })} ` })}`;
+  return renderTemplate`${renderComponent($$result, "Layout", $$Layout, { "projectId": "440938cc-c1e6-42e0-baa5-ae8afd7ea5d7" }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "AboutUs", AboutUs, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/aboutC", "client:component-export": "default" })} ` })}`;
 }, "D:/Daniel/MasterCook/src/pages/about.astro", void 0);
 
 const $$file = "D:/Daniel/MasterCook/src/pages/about.astro";
