@@ -1,35 +1,50 @@
 ---
 import '../styles/global.css';
 import Header from '../components/header';
+
+// Recibe el projectId desde cada página
+export interface Props {
+  projectId: string;
+}
+const { projectId } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>MasterCook</title>
-	</head>
-	<body>
-		<Header client:load/>
-		<main>
-			<slot />
-		</main>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>MasterCook</title>
 
-		<footer>
-		</footer>
-	</body>
+    <!-- Tracking -->
+    <script define:vars={{ projectId }}>
+      (() => {
+        const script = document.createElement('script');
+        script.src = 'http://localhost:4321/api/projects/track-secure';
+        script.dataset.project = projectId;
+        script.defer = true;
+        document.head.appendChild(script);
+      })();
+    </script>
+  </head>
+  <body>
+    <Header client:load />
+    <main>
+      <slot />
+    </main>
+    <footer></footer>
+  </body>
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-		background-color: #FAFAFA;
-		font-family:  "Poppins", sans-serif;
-	}
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FAFAFA;
+    font-family: "Poppins", sans-serif;
+  }
 </style>
