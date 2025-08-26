@@ -19,19 +19,7 @@ const { projectId } = Astro.props;
     <title>MasterCook</title>
 
     <!-- Tracking -->
-    <script define:vars={{ projectId }}>
-  (() => {
-    fetch('https://released-labs.vercel.app/api/projects/track-secure', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        project_id: projectId,
-        path: window.location.pathname + window.location.search,
-        referrer: document.referrer || null
-      })
-    }).catch(() => {});
-  })();
-</script>
+   <script async src="https://fancy-axolotl-68d543.netlify.app/tracker.js" data-ackee-server="https://fancy-axolotl-68d543.netlify.app" data-ackee-domain-id="d0d5bd34-d616-4404-8474-bc3c6cf36b07"></script>
   </head>
   <body>
     <Header client:load />
